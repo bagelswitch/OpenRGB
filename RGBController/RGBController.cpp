@@ -11,6 +11,8 @@
 \*---------------------------------------------------------*/
 
 #include <cstring>
+#include <chrono>
+#include <windows.h>
 #include "RGBController.h"
 
 using namespace std::chrono_literals;
@@ -61,6 +63,8 @@ RGBController::RGBController()
     flags       = 0;
     DeviceThreadRunning = true;
     DeviceCallThread = new std::thread(&RGBController::DeviceCallThreadFunction, this);
+
+    m_timer = CreateWaitableTimer(NULL, TRUE, NULL);
 }
 
 RGBController::~RGBController()
@@ -73,6 +77,8 @@ RGBController::~RGBController()
     colors.clear();
     zones.clear();
     modes.clear();
+
+    CloseHandle(m_timer);
 }
 
 std::string RGBController::GetName()
@@ -2143,7 +2149,14 @@ void RGBController::DeviceCallThreadFunction()
         }
         else
         {
-           std::this_thread::sleep_for(1ms);
+           //std::this_thread::sleep_for(12ms);
+           //Sleep(12);
+           {
+               LARGE_INTEGER ft = {};
+               ft.QuadPart = -120000;
+               SetWaitableTimer(m_timer, &ft, 0, NULL, NULL, 0);
+               WaitForSingleObject(m_timer, INFINITE);
+           }
         }
     }
 }

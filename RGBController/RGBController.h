@@ -426,4 +426,6 @@ private:
     std::mutex                          UpdateMutex;
     std::vector<RGBControllerCallback>  UpdateCallbacks;
     std::vector<void *>                 UpdateCallbackArgs;
+
+    void *    m_timer;
 };

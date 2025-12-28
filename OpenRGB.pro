@@ -325,7 +325,7 @@ TRANSLATIONS +=                                                                 
 #-----------------------------------------------------------------------------------------------#
 # Windows-specific Configuration                                                                #
 #-----------------------------------------------------------------------------------------------#
-win32:QMAKE_CXXFLAGS += /utf-8
+win32:QMAKE_CXXFLAGS += /utf-8 /Ox /Ob2 /Oi /Ot /GT /GL /GR /WX- /fp:fast
 win32:INCLUDEPATH +=                                                                            \
     dependencies/display-library/include                                                        \
     dependencies/hidapi-win/include                                                             \

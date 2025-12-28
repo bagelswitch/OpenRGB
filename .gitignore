@@ -8,6 +8,7 @@ OpenRGB-x86_64.AppImage
 60-openrgb.rules
 debian/changelog
 fedora/OpenRGB.spec
+OpenRGB_resource.rc
 
 # Directories
 .build/
@@ -24,6 +25,7 @@ debug/
 release/
 build/
 Build/
+OpenRGB Windows 64-bit/
 .qmake.cache
 .qmake.stash
 .vscode
