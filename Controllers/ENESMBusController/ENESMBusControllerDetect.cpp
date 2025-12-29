@@ -230,7 +230,7 @@ void DetectENESMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
                     {
                         break;
                     }
-                    std::this_thread::sleep_for(1ms);
+                    std::this_thread::sleep_for(3ms);
                 } while (res >= 0);
 
                 if(address_list_idx < ENE_RAM_ADDRESS_COUNT)
@@ -238,10 +238,10 @@ void DetectENESMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
                     LOG_DEBUG("[ENE SMBus DRAM] Remapping slot %d to address %02X", slot, ene_ram_addresses[address_list_idx]);
 
                     ENERegisterWrite(busses[bus], 0x77, ENE_REG_SLOT_INDEX, slot);
-                    std::this_thread::sleep_for(1ms);
+                    std::this_thread::sleep_for(3ms);
                     ENERegisterWrite(busses[bus], 0x77, ENE_REG_I2C_ADDRESS, (ene_ram_addresses[address_list_idx] << 1));
                 }
-                std::this_thread::sleep_for(1ms);
+                std::this_thread::sleep_for(10ms);
             }
 
             // Add ENE controllers at their remapped addresses
@@ -256,7 +256,7 @@ void DetectENESMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
                     ResourceManager::get()->RegisterRGBController(rgb_controller);
                 }
 
-                std::this_thread::sleep_for(3ms);
+                std::this_thread::sleep_for(10ms);
             }
         }
     }
