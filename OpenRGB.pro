@@ -102,10 +102,12 @@ for(iter, FORMS) {
 GUI_INCLUDES        = $$unique(GUI_INCLUDES)
 
 GUI_H               = $$files("qt/*.h", true)
+GUI_H               -= $$files("qt/ManualDevicesSettingsPage/NanoleafSettingsEntry/*.h",   true)
 GUI_CPP             = $$files("qt/*.cpp", true)
+GUI_CPP             -= $$files("qt/ManualDevicesSettingsPage/NanoleafSettingsEntry/*.cpp",   true)
 
-CONTROLLER_H        = $$files("Controllers/*.h", true)
-CONTROLLER_CPP      = $$files("Controllers/*.cpp", true)
+CONTROLLER_H        = $$files("Controllers/ENESMBusController/*.h", true)
+CONTROLLER_CPP      = $$files("Controllers/ENESMBusController/*.cpp", true)
 
 for(iter, $$list($$CONTROLLER_H)) {
     CONTROLLER_INCLUDES += $$dirname(iter)
@@ -336,7 +338,7 @@ win32:INCLUDEPATH +=                                                            
     i2c_smbus/Windows                                                                           \
     wmi/                                                                                        \
 
-win32:SOURCES += $$CONTROLLER_CPP_WINDOWS
+# win32:SOURCES += $$CONTROLLER_CPP_WINDOWS
 
 win32:SOURCES +=                                                                                \
     dependencies/hueplusplus-1.2.0/src/WinHttpHandler.cpp                                       \
@@ -350,7 +352,7 @@ win32:SOURCES +=                                                                
     AutoStart/AutoStart-Windows.cpp                                                             \
     startup/main_Windows.cpp                                                                    \
 
-win32:HEADERS += $$CONTROLLER_H_WINDOWS
+# win32:HEADERS += $$CONTROLLER_H_WINDOWS
 
 win32:HEADERS +=                                                                                \
     dependencies/display-library/include/adl_defines.h                                          \

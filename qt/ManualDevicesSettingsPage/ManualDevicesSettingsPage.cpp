@@ -11,7 +11,6 @@
 #include "ManualDevicesSettingsPage.h"
 #include "ui_ManualDevicesSettingsPage.h"
 
-#include "NanoleafSettingsEntry.h"
 #include "ResourceManager.h"
 #include "SettingsManager.h"
 
@@ -95,12 +94,7 @@ void ManualDevicesSettingsPage::saveSettings()
     for(std::size_t idx = 0; idx < entries.size(); idx++)
     {
         std::string section = entries[idx]->getSettingsSection();
-        if(section == "NanoleafDevices")
-        {
-            NanoleafSettingsEntry* entry = dynamic_cast<NanoleafSettingsEntry*>(entries[idx]);
-            result[section]["devices"][entry->getLocation()] = entries[idx]->saveSettings();
-        }
-        else if(section == "PhilipsHueDevices")
+        if(section == "PhilipsHueDevices")
         {
             result[section]["bridges"].push_back(entries[idx]->saveSettings());
         }

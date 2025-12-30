@@ -208,6 +208,7 @@ void DetectENESMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
             for (unsigned int slot = 0; slot < 8; slot++)
             {
                 int res = busses[bus]->i2c_smbus_write_quick(0x77, I2C_SMBUS_WRITE);
+                std::this_thread::sleep_for(5ms);
 
                 if(res < 0)
                 {
@@ -225,12 +226,12 @@ void DetectENESMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
                         LOG_DEBUG("[ENE SMBus DRAM] Testing address %02X to see if there is a device there", ene_ram_addresses[address_list_idx]);
 
                         res = busses[bus]->i2c_smbus_write_quick(ene_ram_addresses[address_list_idx], I2C_SMBUS_WRITE);
+                        std::this_thread::sleep_for(5ms);
                     }
                     else
                     {
                         break;
                     }
-                    std::this_thread::sleep_for(3ms);
                 } while (res >= 0);
 
                 if(address_list_idx < ENE_RAM_ADDRESS_COUNT)
@@ -238,7 +239,7 @@ void DetectENESMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
                     LOG_DEBUG("[ENE SMBus DRAM] Remapping slot %d to address %02X", slot, ene_ram_addresses[address_list_idx]);
 
                     ENERegisterWrite(busses[bus], 0x77, ENE_REG_SLOT_INDEX, slot);
-                    std::this_thread::sleep_for(3ms);
+                    std::this_thread::sleep_for(5ms);
                     ENERegisterWrite(busses[bus], 0x77, ENE_REG_I2C_ADDRESS, (ene_ram_addresses[address_list_idx] << 1));
                 }
                 std::this_thread::sleep_for(10ms);
@@ -297,7 +298,7 @@ void DetectENESMBusMotherboardControllers(std::vector<i2c_smbus_interface*> &bus
                         ResourceManager::get()->RegisterRGBController(rgb_controller);
                     }
 
-                    std::this_thread::sleep_for(3ms);
+                    std::this_thread::sleep_for(10ms);
                 }
             }
             else
