@@ -33,33 +33,12 @@ using namespace std::chrono_literals;
 /*----------------------------------------------------------------------*\
 | This list contains the available SMBus addresses for mapping ENE RAM   |
 \*----------------------------------------------------------------------*/
-#define ENE_RAM_ADDRESS_COUNT  23
+#define ENE_RAM_ADDRESS_COUNT  2
 
 static const unsigned char ene_ram_addresses[] =
 {
-    0x70,
     0x71,
-    0x72,
-    0x73,
-    0x74,
-    0x75,
-    0x76,
-    0x78,
-    0x79,
-    0x7A,
-    0x7B,
-    0x7C,
-    0x7D,
-    0x7E,
-    0x7F,
-    0x4F,
-    0x66,
-    0x67,
-    0x39,
-    0x3A,
-    0x3B,
-    0x3C,
-    0x3D
+    0x73
 };
 
 /*---------------------------------------------------------------------------------*\
@@ -130,7 +109,7 @@ bool TestForENESMBusController(i2c_smbus_interface* bus, unsigned char address)
 {
     bool pass = false;
 
-    LOG_DEBUG("[ENE SMBus] looking for devices at 0x%02X...", address);
+    LOG_INFO("[ENE SMBus] looking for devices at 0x%02X...", address);
 
     int res = bus->i2c_smbus_read_byte(address);
 
@@ -143,7 +122,7 @@ bool TestForENESMBusController(i2c_smbus_interface* bus, unsigned char address)
     {
         pass = true;
 
-        LOG_DEBUG("[ENE SMBus] Detected an I2C device at address %02X, testing register range", address);
+        LOG_INFO("[ENE SMBus] Detected an I2C device at address %02X, testing register range", address);
 
         for (int i = 0xA0; i < 0xB0; i++)
         {
@@ -160,7 +139,7 @@ bool TestForENESMBusController(i2c_smbus_interface* bus, unsigned char address)
 
         if(pass)
         {
-            LOG_DEBUG("[ENE SMBus] Checking for Micron string");
+            LOG_INFO("[ENE SMBus] Checking for Micron string");
 
             char buf[16];
             for(int i = 0; i < 16; i++)
@@ -170,12 +149,12 @@ bool TestForENESMBusController(i2c_smbus_interface* bus, unsigned char address)
 
             if(strcmp(buf, "Micron") == 0)
             {
-                LOG_DEBUG("[ENE SMBus] Device %02X is a Micron device, skipping", address);
+                LOG_INFO("[ENE SMBus] Device %02X is a Micron device, skipping", address);
                 pass = false;
             }
             else
             {
-                LOG_VERBOSE("[ENE SMBus] Detection successful, address %02X", address);
+                LOG_INFO("[ENE SMBus] Detection successful, address %02X", address);
             }
         }
     }
@@ -203,7 +182,8 @@ void DetectENESMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
 
         IF_DRAM_SMBUS(busses[bus]->pci_vendor, busses[bus]->pci_device)
         {
-            LOG_DEBUG("[ENE SMBus DRAM] Remapping ENE SMBus RAM modules on 0x77");
+            /*
+            LOG_INFO("[ENE SMBus DRAM] Remapping ENE SMBus RAM modules on 0x77");
 
             for (unsigned int slot = 0; slot < 8; slot++)
             {
@@ -212,7 +192,7 @@ void DetectENESMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
 
                 if(res < 0)
                 {
-                    LOG_DEBUG("[ENE SMBus DRAM] No device detected at 0x77, aborting remap");
+                    LOG_INFO("[ENE SMBus DRAM] No device detected at 0x77, aborting remap");
 
                     break;
                 }
@@ -223,7 +203,7 @@ void DetectENESMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
 
                     if(address_list_idx < ENE_RAM_ADDRESS_COUNT)
                     {
-                        LOG_DEBUG("[ENE SMBus DRAM] Testing address %02X to see if there is a device there", ene_ram_addresses[address_list_idx]);
+                        LOG_INFO("[ENE SMBus DRAM] Testing address %02X to see if there is a device there", ene_ram_addresses[address_list_idx]);
 
                         res = busses[bus]->i2c_smbus_write_quick(ene_ram_addresses[address_list_idx], I2C_SMBUS_WRITE);
                         std::this_thread::sleep_for(5ms);
@@ -236,7 +216,7 @@ void DetectENESMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
 
                 if(address_list_idx < ENE_RAM_ADDRESS_COUNT)
                 {
-                    LOG_DEBUG("[ENE SMBus DRAM] Remapping slot %d to address %02X", slot, ene_ram_addresses[address_list_idx]);
+                    LOG_INFO("[ENE SMBus DRAM] Remapping slot %d to address %02X", slot, ene_ram_addresses[address_list_idx]);
 
                     ENERegisterWrite(busses[bus], 0x77, ENE_REG_SLOT_INDEX, slot);
                     std::this_thread::sleep_for(5ms);
@@ -244,6 +224,7 @@ void DetectENESMBusDRAMControllers(std::vector<i2c_smbus_interface*> &busses)
                 }
                 std::this_thread::sleep_for(10ms);
             }
+            */
 
             // Add ENE controllers at their remapped addresses
             for (unsigned int address_list_idx = 0; address_list_idx < ENE_RAM_ADDRESS_COUNT; address_list_idx++)
@@ -285,7 +266,7 @@ void DetectENESMBusMotherboardControllers(std::vector<i2c_smbus_interface*> &bus
             {
                 for (unsigned int address_list_idx = 0; address_list_idx < AURA_MOBO_ADDRESS_COUNT; address_list_idx++)
                 {
-                    LOG_DEBUG(SMBUS_CHECK_DEVICE_MESSAGE_EN, DETECTOR_NAME, bus, VENDOR_NAME, aura_mobo_addresses[address_list_idx]);
+                    LOG_INFO(SMBUS_CHECK_DEVICE_MESSAGE_EN, DETECTOR_NAME, bus, VENDOR_NAME, aura_mobo_addresses[address_list_idx]);
 
                     if (TestForENESMBusController(busses[bus], aura_mobo_addresses[address_list_idx]))
                     {
@@ -303,7 +284,7 @@ void DetectENESMBusMotherboardControllers(std::vector<i2c_smbus_interface*> &bus
             }
             else
             {
-                LOG_DEBUG(SMBUS_CHECK_DEVICE_FAILURE_EN, DETECTOR_NAME, bus, VENDOR_NAME);
+                LOG_INFO(SMBUS_CHECK_DEVICE_FAILURE_EN, DETECTOR_NAME, bus, VENDOR_NAME);
             }
         }
     }
@@ -331,12 +312,12 @@ void DetectENESMBusGPUControllers(i2c_smbus_interface* bus, uint8_t i2c_addr, co
     }
     else
     {
-        LOG_DEBUG("[ENE SMBus ASUS GPU] Testing for controller at %d failed", i2c_addr);
+        LOG_INFO("[ENE SMBus ASUS GPU] Testing for controller at %d failed", i2c_addr);
     }
 } /* DetectENESMBusGPUControllers() */
 
 REGISTER_I2C_DETECTOR("ENE SMBus DRAM",                 DetectENESMBusDRAMControllers);
-REGISTER_I2C_DETECTOR("ASUS Aura SMBus Motherboard",    DetectENESMBusMotherboardControllers);
+//REGISTER_I2C_DETECTOR("ASUS Aura SMBus Motherboard",    DetectENESMBusMotherboardControllers);
 
 /*-----------------------------------------*\
 |  Nvidia GPUs                              |
